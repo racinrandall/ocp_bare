@@ -1,0 +1,21 @@
+$TTL 1W
+@	IN	SOA	ns1.{{ dns.cluster_name }}.{{ dns.domain | lower }}.	root (
+			{{ serialnumber }}	; serial
+			3H		; refresh (3 hours)
+			30M		; retry (30 minutes)
+			2W		; expiry (2 weeks)
+			1W )		; minimum (1 week)
+	IN	NS	ns1.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
+	IN	MX 10	smtp.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
+;
+; 
+ns1	IN	A	{{ provisioner.ipaddr2 }}
+smtp	IN	A	{{ provisioner.ipaddr2 }}
+;
+{{ provisioner.name | lower }}	IN	A	{{ provisioner.ipaddr2 }}
+api	IN	A	{{ api_ip }}
+*.apps	IN	A	{{ apps_ip }}
+
+{% for m in masters %}
+{{ m.name | lower }}		IN	A	{{ m.ipaddr2 }}
+{% endfor %}

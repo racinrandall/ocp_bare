@@ -1,0 +1,17 @@
+---
+- name: Setup Provisioner for OCP Bare Metal IPI
+  hosts: provisioner
+  become: true
+  tasks:
+    - ansible.builtin.include_tasks: install_rhel_roles.yaml
+
+    - ansible.builtin.include_role:
+        name: rhel-system-roles.network
+
+    - ansible.builtin.include_role:
+        name: dns
+      when: dns_required
+
+    - ansible.builtin.include_role:
+        name: dhcp
+      when: dhcp_required

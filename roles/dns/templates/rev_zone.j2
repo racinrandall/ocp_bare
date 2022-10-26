@@ -1,0 +1,17 @@
+$TTL 1W
+@	IN	SOA	ns1.{{ dns.cluster_name }}.{{ dns.domain | lower }}.	root (
+			{{ serialnumber }}	; serial
+			3H		; refresh (3 hours)
+			30M		; retry (30 minutes)
+			2W		; expiry (2 weeks)
+			1W )		; minimum (1 week)
+	IN	NS	ns1.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
+;
+; syntax is "last octet" and the host must have fqdn with trailing dot
+{{ provisioner.ipaddr2.split('.')[3] }}       IN      PTR     provisioner.{{ dns.cluster_name }}.{{ dns.domain }}.
+
+{{ api_ip.split('.')[3] }}	IN	PTR	api.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
+
+{% for m in masters %}
+{{ m.ipaddr2.split('.')[3] }}	IN	PTR	{{ m.name | lower }}.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
+{% endfor %}

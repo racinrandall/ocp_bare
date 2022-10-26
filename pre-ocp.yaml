@@ -1,0 +1,7 @@
+---
+- name: Setup Provisioner for OCP Bare Metal IPI
+  hosts: provisioner
+  become: true
+  tasks:
+    - ansible.builtin.include_role:
+        name: pre-ocp

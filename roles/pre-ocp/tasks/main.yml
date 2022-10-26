@@ -1,0 +1,87 @@
+---
+- name: Install required packages
+  ansible.builtin.yum:
+    name: "{{ prov_packages }}"
+    state: present
+
+- name: Create user for install
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: present
+    password: "{{ password | password_hash('sha512') }}"
+    groups: libvirt
+    append: true
+    generate_ssh_key: true
+    update_password: on_create
+  loop: "{{ prov_user }}"
+
+- name: Setup sudoers for above user
+  ansible.builtin.copy:
+    content: "{{ prov_user }} ALL=(root) NOPASSWD:ALL"
+    dest: "/etc/sudoers.d/{{ prov_user }}"
+    mode: '0440'
+
+- name: Setup firewall
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: yes
+  loop: "{{ prov_firewall_svc }}"
+
+- name: Enable libvirtd
+  ansible.builtin.service:
+    name: libvirtd
+    state: started
+    enabled: true
+
+- name: Gather facts on existing virsh pool
+  community.libvirt.virt_pool:
+    command: facts
+    uri: "{{ libvirt_uri }}"
+
+- name: Create directory for virsh pool
+  ansible.builtin.file:
+    path: "{{ libvirt_default_pool }}"
+    group: libvirt
+    mode: '0775'
+
+- name: configure default virsh pool
+  community.libvirt.virt_pool:
+    command: define
+    name: "{{ image_pool_name }}"
+    xml: '{{ lookup("template", "pool.xml.j2") }}'
+    uri: "{{ libvirt_uri }}"
+  when: image_pool_name not in ansible_libvirt_pools
+
+- name: Gather facts on existing virsh pool
+  community.libvirt.virt_pool:
+    command: facts
+    uri: "{{ libvirt_uri }}"
+
+- block:
+  - name: build the storage pool.
+    community.libvirt.virt_pool:
+      command: build
+      name: "{{ image_pool_name }}"
+      uri: "{{ libvirt_uri }}"
+
+  - name: start the storage pool.
+    community.libvirt.virt_pool:
+      command: create
+      name: "{{ image_pool_name }}"
+      uri: "{{ libvirt_uri }}"
+  when: ansible_libvirt_pools["{{image_pool_name}}"].state != "active"
+
+- name: autostart the storage pool
+  community.libvirt.virt_pool:
+  autostart: yes
+  name: "{{ image_pool_name }}"
+  uri: "{{ libvirt_uri }}"
+
+- name: ensure that the pool is active
+  community.libvirt.virt_pool:
+    state: active
+    name: "{{ image_pool_name }}"
+    uri: "{{ libvirt_uri }}"
+
+- name: pull OC binary and extract to /usr/local/bin

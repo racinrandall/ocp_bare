@@ -1,0 +1,16 @@
+---
+prov_user: 
+  - kni
+password: "{{ lookup('password', 'credentials/' + item + ' length=15 chars=ascii_letters,digits,punctuation') }}"
+prov_packages:
+  - libvirt
+  - qemu-kvm
+  - mkisofs
+  - pythond3-devel
+  - jq
+  - ipmitool
+libvirt_default_pool: "/var/lib/libvirt/images"
+image_pool_name: "default"
+prov_firewall_svc: 
+  - http
+libvirt_uri: "qemu:///system"

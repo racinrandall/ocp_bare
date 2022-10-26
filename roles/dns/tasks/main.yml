@@ -1,0 +1,64 @@
+---
+#- name: Install required filter on ansible control node
+#  ansible.builtin.yum:
+#    name: "{{ ipaddr_package }}"
+#    state: latest
+#  delegate_to: localhost
+
+- name: Install required packages
+  ansible.builtin.yum:
+    name: "{{ dns_packages }}"
+    state: latest
+
+- name: Copy named.conf
+  ansible.builtin.template:
+    src: named.conf.j2
+    dest: /etc/named.conf
+    owner: root
+    group: named
+    mode: '0640'
+  notify: restart bind
+
+- name: Disable IPV6 in named
+  ansible.builtin.lineinfile:
+    path: /etc/sysconfig/named
+    line: OPTIONS="-4"
+    backup: true
+    state: present
+  notify: restart bind
+
+- name: Installing DNS Serialnumber generator
+  copy:
+    src: set-dns-serial.sh
+    dest: /usr/local/bin/set-dns-serial.sh
+    mode: '0555'
+
+- name: Set zone serial number
+  shell: "/usr/local/bin/set-dns-serial.sh"
+  register: dymanicserialnumber
+
+- name: Setting serial number as a fact
+  set_fact:
+    serialnumber: "{{ dymanicserialnumber.stdout }}"
+ 
+- name: Write out "{{ dns.domain | lower }}" zone file
+  template:
+    src: fwd_zone.j2
+    dest: /var/named/zonefile.db
+    mode: '0644'
+  notify:
+    - restart bind
+
+- name: Write out reverse zone file
+  template:
+    src: rev_zone.j2
+    dest: /var/named/reverse.db
+    mode: '0644'
+  notify:
+    - restart bind
+
+- name: Open firewall for DNS
+  ansible.posix.firewalld:
+    service: dns
+    state: enabled
+    permanent: yes

@@ -1,0 +1,5 @@
+---
+- name: Install RHEL Ansible Roles
+  ansible.builtin.yum:
+    name: rhel-system-roles
+    state: present

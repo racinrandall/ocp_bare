@@ -1,0 +1,21 @@
+---
+- name: Install packages for DHCP/PXE install
+  package:
+    name: "{{ dhcppkgs }}"
+    state: present
+
+- name: Write out dhcp file
+  template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+  notify:
+    - restart dhcpd
+  when: not uefi
+
+- name: Write out dhcp file (UEFI)
+  template:
+    src: ../templates/dhcpd-uefi.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+  notify:
+    - restart dhcpd
+  when: uefi

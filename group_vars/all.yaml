@@ -1,0 +1,51 @@
+---
+dns_required: true
+dhcp_required: true
+bare_net_name: baremetal
+prov_net_name: provisioning
+provisioner:                 
+  name: bastion              
+  interface1: eno1           
+  ipaddr1: "192.168.11.2" 
+  prefix1: "24"
+  interface2: eno2           
+  ipaddr2: "192.168.85.2" 
+  prefix2: "24"
+  gateway2: "192.168.85.1"
+dns:
+  domain: "randalllabs.com"
+  cluster_name: "bare"
+  forwarder1: "192.168.80.2"
+  forwarder2: "192.168.80.4"
+dhcp:
+  router: "192.168.85.1"
+  bcast: "192.168.80.255"
+  netmask: "255.255.255.0"
+  poolstart: "192.168.85.100"
+  poolend: "192.168.85.200"
+  ipid: "192.168.85.0"
+  netmaskid: "255.255.255.0"
+dns_packages:
+  - bind
+  - bind-utils
+zone_file_location: /var/named/zones  
+masters:
+  - name: "control0"
+    ipaddr2: "192.168.85.101"
+    macaddr2: "34:64:A9:B9:9D:98"
+  - name: "control1"
+    ipaddr2: "192.168.85.102"
+    macaddr2: "94:57:A5:A8:C0:D0"
+  - name: "control2"
+    ipaddr2: "192.168.85.103"
+    macaddr2: "14:02:EC:ED:C3:F0"
+api_ip: "192.168.85.3"
+apps_ip: "192.168.85.4"
+uefi: false
+dhcppkgs:
+  - dhcp-server
+networkifacename: baremetal
+pxenetworkifacename: provisioning
+ocp_version: "stable-4.11"
+ocp_release_arch: "x86_64"
+
