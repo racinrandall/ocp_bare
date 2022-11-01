@@ -9,6 +9,10 @@
         name: rhel-system-roles.network
 
     - ansible.builtin.include_role:
+        name: ocp-mirror
+      when: mirror_required
+
+    - ansible.builtin.include_role:
         name: dns
       when: dns_required
 

@@ -1,0 +1,8 @@
+---
+- name: Setup Mirror Registry
+  hosts: provisioner
+  become: true
+  tasks:
+   
+  roles:
+    - ocp-mirror  

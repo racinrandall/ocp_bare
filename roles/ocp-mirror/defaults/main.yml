@@ -1,0 +1,10 @@
+---
+podman_packages:
+  - podman
+
+min_cpu: 2
+min_ram: 8192
+min_free_space_registry: "12GB"
+min_free_space_mirror: "5GB"
+registry_dir: "/registry"
+quay_user: init

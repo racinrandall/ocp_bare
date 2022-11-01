@@ -1,0 +1,114 @@
+---
+- name: Create registry directory - This is the directory that the registry stores it's images
+  ansible.builtin.file:
+    name: "{{ registry_dir }}"
+    state: directory
+
+- name: Create temp directory to place installer - this is where we will run the mirror-registry installer
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: ocp_mirror
+    path: "{{ installer_dir_path | default(omit) }}"
+  register: mirror_inst_dir
+
+- name: "Find the filesystem of {{ registry_dir }}"
+  ansible.builtin.shell:
+    cmd: "df -h {{ registry_dir }} | tail -n1 | awk '{print $NF}'"
+  register: registry_dir_fs
+  changed_when: false
+
+- name: "Set fact for filesystem of {{ registry_dir }}"
+  ansible.builtin.set_fact:
+    registry_dir_filesystem: "{{ registry_dir_fs.stdout }}"
+
+- name: "Find the filesystem of {{ mirror_inst_dir.path }}"
+  ansible.builtin.shell:
+    cmd: "df -h {{ mirror_inst_dir.path }} | tail -n1 | awk '{print $NF}'"
+  register: mirror_dir_fs
+  changed_when: false
+
+- name: "Set fact for filesystem of {{ mirror_inst_dir.path }}"
+  ansible.builtin.set_fact:
+    mirror_dir_filesystem: "{{ mirror_dir_fs.stdout }}"
+
+- name: Display registry filesystem
+  ansible.builtin.debug:
+    var: registry_dir_filesystem
+    
+- name: Display mirror filesystem
+  ansible.builtin.debug:
+    var: mirror_dir_filesystem
+
+- name: "Determine if {{ mirror_inst_dir.path }} and {{ registry_dir }} are located on the same filesystem"
+  ansible.builtin.set_fact:
+    same_fs: true
+  when: registry_dir_filesystem == mirror_dir_filesystem
+
+- name: Check space on combined filesystem
+  block:
+    - name: Determine combined space requirement
+      ansible.builtin.set_fact:
+        combined_min_space_bytes: "{{ min_free_space_registry | human_to_bytes }} + {{ min_free_space_mirror | human_to_bytes }}"
+
+    - name: Check the sapce on the combined filesystem
+      ansible.builtin.shell:
+        cmd: "df {{ registry_dir }} | tail -n1 | awk '{print $4'"
+      register: df_combined_dir_results
+
+    - name: Determine if there is enough free space
+      ansible.builtin.assert:
+        that:
+          - df_combined_dir_results.stdout >= combined_min_space_bytes
+  when: registry_dir_filesystem == mirror_dir_filesystem
+
+- name: "Check space available when {{ registry_dir }} and {{ mirror_inst_dir.path }} are on different filesystems"
+  block:
+    - name: "Check space on {{ registry_dir }}"
+      ansible.builtin.shell:
+        cmd: "df -h {{ registry_dir }} | tail -n1 | awk '{print $4}'"
+      register: df_registry_dir_results
+    
+    - name: "Ensure there is enough space for the registry in {{ registry_dir }}"
+      ansible.builtin.assert:
+        that:
+          - df_registry_dir_results.stdout | human_to_bytes >= min_free_space_registry | human_to_bytes
+        fail_msg: "There is not enough space in {{ registry_dir }} for the required images"
+
+    - name: "Check space on {{ mirror_inst_dir.path }}"
+      ansible.builtin.shell:
+        cmd: "df -h {{ mirror_inst_dir.path }} | tail -n1 | awk '{print $4'}"
+      register: df_mirror_inst_dir_results
+
+    - name: "Ensure there is enough space for the installer in {{ mirror_inst_dir.path }}"
+      ansible.builtin.assert:
+        that:
+          - df_mirror_inst_dir_results.stdout | human_to_bytes >= min_free_space_mirror | human_to_bytes
+        fail_msg: "There is not enough space in {{ mirror_inst_dir.path }} for the installation files"
+  when: registry_dir_filesystem != mirror_dir_filesystem
+
+- name: Ensure there is enough RAM and CPU
+  ansible.builtin.assert:
+    that:
+      - ansible_memtotal_mb >= min_ram
+      - ansible_processor_vcpus >= min_cpu
+    msg: "you must have at least {{ min_cpu }} CPUs and {{ min_ram }} MB of RAM"
+
+- name: Install required packages
+  ansible.builtin.yum:
+    name: "{{ podman_packages }}"
+    state: present
+
+- name: Copy mirror registry installer
+  ansible.builtin.unarchive:
+    src: mirror-registry.tar.gz
+    dest: "{{ mirror_inst_dir.path }}"
+
+- name: Run mirror installer
+  ansible.builtin.shell:
+    cmd: "./mirror-registry install --quayHostname {{ ansible_fqdn }} --quayRoot {{ registry_dir }}"
+    chdir: "{{ mirror_inst_dir.path }}"
+  register: installer_results
+
+- name: show output from installer
+  ansible.builtin.debug:
+    var: installer_results.stdout_lines[-1]
