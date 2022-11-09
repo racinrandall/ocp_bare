@@ -1,24 +1,9 @@
 ---
 network_connections:
-  - name: "{{ prov_net_name }}"
-    type: bridge
-    state: up
-    interface_name: "{{ prov_net_name }}"
-    ip:
-      address:
-        - "{{ provisioner.ipaddr1 }}/{{ provisioner.prefix1 }}"
-
-  - name: "{{ provisioner.interface1 }}"
+  - name: "{{ provisioner.interface2 }}"
     state: up
     type: ethernet
-    interface_name: "{{ provisioner.interface1 }}"
-    controller: "{{ prov_net_name }}"
-    port_type: bridge
-    
-  - name: "{{ bare_net_name }}"
-    type: bridge
-    state: up
-    interface_name: "{{ bare_net_name }}"
+    interface_name: "{{ provisioner.interface2 }}"
     ip:
       address:
         - "{{ provisioner.ipaddr2 }}/{{ provisioner.prefix2 }}"
@@ -28,9 +13,17 @@ network_connections:
         - "{{ dns.forwarder2 }}"
       dns_search: "{{ dns.domain }}"
 
-  - name: "{{ provisioner.interface2 }}"
+  - name: "{{ bare_net_name }}"
+    type: bridge
+    state: up
+    interface_name: "{{ bare_net_name }}"
+    ip:
+      address:
+        - "{{ provisioner.ipaddr1 }}/{{ provisioner.prefix1 }}"
+
+  - name: "{{ provisioner.interface1 }}"
     state: up
     type: ethernet
-    interface_name: "{{ provisioner.interface2 }}"
+    interface_name: "{{ provisioner.interface1 }}"
     controller: "{{ bare_net_name }}"
     port_type: bridge

@@ -1,10 +1,4 @@
 ---
-#- name: Install required filter on ansible control node
-#  ansible.builtin.yum:
-#    name: "{{ ipaddr_package }}"
-#    state: latest
-#  delegate_to: localhost
-
 - name: Install required packages
   ansible.builtin.yum:
     name: "{{ dns_packages }}"
@@ -44,7 +38,7 @@
 - name: Write out "{{ dns.domain | lower }}" zone file
   template:
     src: fwd_zone.j2
-    dest: /var/named/zonefile.db
+    dest: "/var/named/{{ dns.domain | lower }}.zone"
     mode: '0644'
   notify:
     - restart bind
@@ -52,7 +46,7 @@
 - name: Write out reverse zone file
   template:
     src: rev_zone.j2
-    dest: /var/named/reverse.db
+    dest: "/var/named/{{ provisioner.ipaddr1.split('.')[2] }}.{{ provisioner.ipaddr1.split('.')[1] }}.{{ provisioner.ipaddr1.split('.')[0] }}.in-addr.arpa.zone"
     mode: '0644'
   notify:
     - restart bind
@@ -61,4 +55,5 @@
   ansible.posix.firewalld:
     service: dns
     state: enabled
-    permanent: yes
+    permanent: true
+    immediate: true

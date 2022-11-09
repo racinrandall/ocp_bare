@@ -1,17 +1,22 @@
 $TTL 1W
-@	IN	SOA	ns1.{{ dns.cluster_name }}.{{ dns.domain | lower }}.	root (
-			{{ serialnumber }}	; serial
-			3H		; refresh (3 hours)
-			30M		; retry (30 minutes)
-			2W		; expiry (2 weeks)
-			1W )		; minimum (1 week)
-	IN	NS	ns1.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
+@		IN		SOA		ns1.{{ dns.cluster_name }}.{{ dns.domain | lower }}.	root (
+						{{ serialnumber }}	; serial
+						3H					; refresh (3 hours)
+						30M					; retry (30 minutes)
+						2W					; expiry (2 weeks)
+						1W )				; minimum (1 week)
+		IN		NS		ns1.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
 ;
-; syntax is "last octet" and the host must have fqdn with trailing dot
-{{ provisioner.ipaddr2.split('.')[3] }}       IN      PTR     provisioner.{{ dns.cluster_name }}.{{ dns.domain }}.
+{{ provisioner.ipaddr2.split('.')[3] }}       IN      PTR     {{ provisioner.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}.
 
-{{ api_ip.split('.')[3] }}	IN	PTR	api.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
+{{ api_ip.split('.')[3] }}	IN	PTR	api.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}.
+{{ api_ip.split('.')[3] }}	IN	PTR	api-int.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}.
+
+{% if bootstrap is defined %}
+; Bootstrap
+{{ bootstrap.ipaddr.split('.')[3] }} 	IN		PTR		{{ boostrap.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}.
+{% endif %}
 
 {% for m in masters %}
-{{ m.ipaddr2.split('.')[3] }}	IN	PTR	{{ m.name | lower }}.{{ dns.cluster_name }}.{{ dns.domain | lower }}.
+{{ m.ipaddr.split('.')[3] }}			IN		PTR		{{ m.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}.
 {% endfor %}

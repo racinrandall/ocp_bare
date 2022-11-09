@@ -9,15 +9,15 @@
 
 
 options {
-	listen-on port 53 { any; };
-	listen-on-v6 port 53 { any; };
+	listen-on port 53 { 127.0.0.1;{{ provisioner.ipaddr1 }}; };
+	listen-on-v6 port 53 { ::1; };
 	directory 	"/var/named";
 	dump-file 	"/var/named/data/cache_dump.db";
 	statistics-file "/var/named/data/named_stats.txt";
 	memstatistics-file "/var/named/data/named_mem_stats.txt";
 	secroots-file	"/var/named/data/named.secroots";
 	recursing-file	"/var/named/data/named.recursing";
-	allow-query     { any; };
+	allow-query     { localhost; };
 
 	/* 
 	 - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
@@ -31,12 +31,8 @@ options {
 	*/
 	recursion yes;
 
-	/* Fowarders */
-	forward only;
-	forwarders { {{ dns.forwarder1 | default("8.8.8.8") }}; {{ dns.forwarder2 | default("8.8.4.4") }}; };
-
 	dnssec-enable yes;
-	dnssec-validation no;
+	dnssec-validation yes;
 
 	managed-keys-directory "/var/named/dynamic";
 
@@ -59,15 +55,21 @@ zone "." IN {
 	file "named.ca";
 };
 
-zone "{{ dns.cluster_name }}.{{ dns.domain }}" IN {
-	type master;
-	file "zonefile.db";
-};
-
-zone "{{ provisioner.ipaddr2.split('.')[2] }}.{{ provisioner.ipaddr2.split('.')[1] }}.{{ provisioner.ipaddr2.split('.')[0] }}.in-addr.arpa" IN {
-	type master;
-	file "reverse.db";
-};
-
 include "/etc/named.rfc1912.zones";
 include "/etc/named.root.key";
+
+zone "{{ dns.domain }}" IN {
+	type master;
+	file "{{ dns.domain }}.zone";
+	allow-query { any: };
+	allow-transfer { any };
+	allow-update { any };
+};
+
+zone "{{ provisioner.ipaddr1.split('.')[2] }}.{{ provisioner.ipaddr1.split('.')[1] }}.{{ provisioner.ipaddr1.split('.')[0] }}.in-addr.arpa" {
+	type master;
+	file "{{ provisioner.ipaddr1.split('.')[2] }}.{{ provisioner.ipaddr1.split('.')[1] }}.{{ provisioner.ipaddr1.split('.')[0] }}.in-addr.arpa.zone";
+	allow-query { any: };
+	allow-transfer { any };
+	allow-update { any };
+};

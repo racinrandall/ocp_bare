@@ -25,7 +25,8 @@
   ansible.posix.firewalld:
     service: "{{ item }}"
     state: enabled
-    permanent: yes
+    permanent: true
+    immediate: true
   loop: "{{ prov_firewall_svc }}"
 
 - name: Enable libvirtd
