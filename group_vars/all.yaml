@@ -31,9 +31,6 @@ dhcp:
   ipid: "192.168.11.0"
   netmaskid: "255.255.255.0"
 bootstrap:
-  name: bootstrap
-  ipaddr: "192.168.11.200"
-  macaddr: "34:64:A9:B9:92:98"
 masters:
   - name: "control0"
     ipaddr: "192.168.11.101"
