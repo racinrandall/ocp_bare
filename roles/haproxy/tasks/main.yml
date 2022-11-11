@@ -1,0 +1,29 @@
+---
+- name: install haproxy package
+  ansible.builtin.yum:
+    name: haproxy
+    state: latest
+
+- name: copy haproxy template
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify:
+    - restart haproxy
+
+- name: SEBool allow haproxy connect any port
+  ansible.posix.seboolean:
+    name: haproxy_connect_any
+    state: yes
+    persistent: yes
+  notify:
+    - restart haproxy
+
+- name: Open firewall ports
+  ansible.posix.firewalld:
+    permanent: true
+    immediate: true
+    state: enabled
+    port: "{{ item }}"
+  with_items:
+    - "{{ ports }}"

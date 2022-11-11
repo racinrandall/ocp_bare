@@ -1,0 +1,8 @@
+---
+- name: Setup DHCP Server
+  hosts: provisioner
+  become: true
+  tasks:
+   
+  roles:
+    - dhcp

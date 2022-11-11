@@ -1,0 +1,8 @@
+---
+- name: Setup DNS Server
+  hosts: provisioner
+  become: true
+  tasks:
+   
+  roles:
+    - dns

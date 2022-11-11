@@ -1,0 +1,6 @@
+---
+- name: Setup Network
+  hosts: provisioner
+  become: true
+  roles:
+    - rhel-system-roles.network

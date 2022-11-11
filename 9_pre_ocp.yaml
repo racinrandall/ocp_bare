@@ -1,0 +1,8 @@
+---
+- name: OCP Pre-reqs
+  hosts: provisioner
+  become: true
+  tasks:
+   
+  roles:
+    - pre-ocp

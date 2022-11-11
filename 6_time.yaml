@@ -1,0 +1,8 @@
+---
+- name: Setup Time Server
+  hosts: provisioner
+  become: true
+  tasks:
+   
+  roles:
+    - time

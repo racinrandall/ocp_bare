@@ -1,2 +1,4 @@
 pull-secret.txt
-mirror-registry.tar.gz
+*.gz
+*.pem
+openshift-baremetal-install

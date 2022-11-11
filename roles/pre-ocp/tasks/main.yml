@@ -44,6 +44,7 @@
   ansible.builtin.file:
     path: "{{ libvirt_default_pool }}"
     group: libvirt
+    state: directory
     mode: '0775'
 
 - name: configure default virsh pool
@@ -75,9 +76,9 @@
 
 - name: autostart the storage pool
   community.libvirt.virt_pool:
-  autostart: yes
-  name: "{{ image_pool_name }}"
-  uri: "{{ libvirt_uri }}"
+    autostart: yes
+    name: "{{ image_pool_name }}"
+    uri: "{{ libvirt_uri }}"
 
 - name: ensure that the pool is active
   community.libvirt.virt_pool:
@@ -85,4 +86,44 @@
     name: "{{ image_pool_name }}"
     uri: "{{ libvirt_uri }}"
 
-- name: pull OC binary and extract to /usr/local/bin
+- name: Copy openshift-ipi-baremetal installer
+  ansible.builtin.copy:
+    src: "{{ ipi_installer }}"
+    dest: /usr/local/bin/
+
+- name: Install Podman
+  ansible.builtin.yum:
+    name: podman
+    state: present
+
+- name: Open firewall for podman http access
+  ansible.posix.firewalld:
+    permanent: true
+    immediate: true
+    state: enabled
+    port: "{{ podman_http_port }}/tcp"
+
+- name: Create directory for RHCOS image
+  ansible.builtin.file: 
+    path: "/home/{{ prov_user }}/rhcos_image_cache"
+    state: directory
+    setype: httpd_sys_content_t
+    owner: "{{ prov_user }}"
+    group: "{{ prov_user }}"
+
+- name: Copy image to directory
+  ansible.builtin.copy: 
+    src: "{{ rhcos_image }}"
+    dest: "/home/{{ prov_user }}/rhcos_image_cache"
+    setype: httpd_sys_content_t
+    owner: "{{ prov_user }}"
+    group: "{{ prov_user }}"
+
+- name: Create Podman container for http  
+  containers.podman.podman_container:
+    name: rhcos_image_cache
+    volume: "/home/{{ prov_user }}/rhcos_image_cache:/var/www/html"
+    publish: 8080:8080
+    image: quay.io/centos7/httpd-24-centos7:latest
+
+    

@@ -1,0 +1,8 @@
+---
+- name: Setup HAProxy Server
+  hosts: provisioner
+  become: true
+  tasks:
+   
+  roles:
+    - haproxy

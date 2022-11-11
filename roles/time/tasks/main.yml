@@ -1,0 +1,26 @@
+---
+- name: Install Chrony packages
+  ansible.builtin.yum:
+    name: chrony
+    state: present
+
+- name: Copy chrony.conf template
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start and enable chrony service
+  ansible.builtin.service:
+    name: chronyd
+    state: restarted
+    enabled: true
+
+- name: Open firewall for NTP
+  ansible.posix.firewalld:
+    service: ntp
+    state: enabled
+    permanent: true
+    immediate: true

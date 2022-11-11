@@ -1,22 +1,25 @@
 ---
+registry_user: 
+registry_pass: 
+registry_email:
 mirror_required: false
 dns_required: true
 dhcp_required: true
+haproxy_required: true
+time_required: true
 bare_net_name: baremetal
 provisioner:                 
   name: bastion              
   interface1: eno1 #private          
   ipaddr1: "192.168.11.2" 
   prefix1: "24"
-  gateway1: "192.168.11.1"
   interface2: eno2 #lmi           
-  ipaddr2: "192.168.85.2" 
+  ipaddr2: "192.168.85.2"
   prefix2: "24"
+  gateway2: "ip addr"
 dns:
   domain: "dsl.com"
   cluster_name: "svl-sbgold"
-  forwarder1: "192.168.80.2"
-  forwarder2: "192.168.80.4"
 dhcp:
   router: "192.168.85.1"
   bcast: "192.168.80.255"
@@ -33,15 +36,46 @@ masters:
   - name: "control0"
     ipaddr: "192.168.85.101"
     macaddr: "34:64:A9:B9:9D:98"
+    ilo_ip: ""
+    ilo_user:
+    ilo_pw:
+    root_device: /dev/nvme0n1
   - name: "control1"
     ipaddr: "192.168.85.102"
     macaddr: "94:57:A5:A8:C0:D0"
+    ilo_ip: ""
+    ilo_user:
+    ilo_pw:
+    root_device: /dev/nvme0n1
   - name: "control2"
     ipaddr: "192.168.85.103"
     macaddr: "14:02:EC:ED:C3:F0"
+    ilo_ip: ""
+    ilo_user:
+    ilo_pw:
+    root_device: /dev/nvme0n1
 api_ip: "192.168.85.3"
 apps_ip: "192.168.85.4"
 networkifacename: baremetal
 ocp_version: "stable-4.11"
 ocp_release_arch: "x86_64"
-
+oc_cli_tar: oc-4.11.13-linux.tar.gz
+oc_mirror_tar: oc-mirror.tar.gz
+haproxy_control: false
+time_server:
+  - name: 
+  - name: 
+registry_server: "registry.{{ dns.cluster | lower }}.{{ dns.domain | lower }}"
+mirror_metadata_storage: /var/opt/mirror
+mirror_tarball: mirror_content.tar
+mirror_tarball_dest: /tmp
+registry_port: 5050
+local_mirror_path: '/tmp/mirror/'
+ipi_installer: "openshift-baremetal-install"
+podman_http_port: 8080
+rhcos_image: rhcos-411.86.202207150124-0-qemu.x86_64.qcow2.gz
+rhcos_image_sha256: 5ff0b437ce2a3749feedbf6eb20fdb168dfb110fbdde82aaab092d9bb158aba3
+http_proxy: 
+https_proxy: "{{ http_proxy }}"
+no_proxy: 
+cert_chain: true

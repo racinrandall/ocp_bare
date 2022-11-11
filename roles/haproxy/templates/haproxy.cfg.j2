@@ -1,0 +1,120 @@
+#############################################################################################
+#                                                                                           #
+# Title:        /etc/haproxy/haproxy.cfg                                                    #
+# Version:                                                                                  #
+#               1.0 2021-12-12 WRC. Initial                                                 #
+# Create Date:  2021-11-12                                                                  #
+# Author:       Casagrande, Wayne (US) <wayne.casagrande@lmco.com>                          #
+# Description:                                                                              #
+#               haproxy configuration                                                       #
+# SNI Configuration (does not work with OCP but good reference)                             #
+#############################################################################################
+global
+  daemon
+  user                      haproxy
+  group                     haproxy
+  log                       127.0.0.1 local2
+  maxconn                   10000
+  pidfile                   /var/run/haproxy.pid
+
+#############################################################################################
+# Defaults Section                                                                          #
+#############################################################################################
+defaults
+  mode                      http
+  log                       global
+  option                    dontlognull
+  option                    http-server-close
+  option                    redispatch
+  retries                   3
+  timeout http-request      10s
+  timeout queue             1m
+  timeout connect           10s
+  timeout client            1m
+  timeout server            1m
+  timeout http-keep-alive   10s
+  timeout check             10s
+  maxconn                   3000
+
+#############################################################################################
+# Statistics Section                                                                        #
+#############################################################################################
+frontend stats
+  bind      *:1936
+  mode      http
+  log       global
+  maxconn   10
+  stats     enable
+  stats     hide-version
+  stats     refresh 30s
+  stats     show-node
+  stats     show-desc OpenShift Cluster
+  stats     auth admin:password
+  stats     uri /stats
+
+#############################################################################################
+# Front End Services                                                                        #
+#############################################################################################
+frontend ingress-80
+  bind              {{ provisioner.ipaddr2 }}:80
+  mode              tcp
+  default_backend   masters-80
+
+
+frontend ingress-443
+  bind              {{ provisioner.ipaddr2 }}:443
+  mode              tcp
+  default_backend   masters-443
+
+{% if haproxy_control %}
+frontend control-6443
+  bind              {{ provisioner.ipaddr2 }}:6443
+  mode              tcp
+  default_backend   masters-6443
+
+frontend control-22623
+  bind              {{ provisioner.ipaddr2 }}:22623
+  mode              tcp
+  default_backend   masters-22623
+{% endif %}
+
+#############################################################################################
+# Backend Services                                                                          #
+#############################################################################################
+{% if haproxy_control %}
+backend masters-6443
+  mode      tcp
+  balance   source
+{% if bootstrap is defined %}
+  server {{ bootstrap.name | lower }} {{ bootstrap.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}:6443 check inter 1s backup
+{% endif %}
+
+{% for m in masters %}
+  server    {{ m.name | lower }} {{ m.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}:6443 check inter 1s
+{% endfor %}
+
+backend masters-22623
+  mode      tcp
+  balance   source
+{% if bootstrap is defined %}
+  server {{ bootstrap.name | lower }} {{ bootstrap.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}:22623 check inter 1s backup
+{% endif %}
+
+{% for m in masters %}
+  server    {{ m.name | lower }} {{ m.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}:22623 check inter 1s
+{% endfor %}
+{% endif%}
+
+backend masters-80
+  mode      tcp
+  balance   source
+{% for m in masters %}
+  server    {{ m.name | lower }} {{ m.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}:80 check inter 1s
+{% endfor %}
+
+backend masters-443
+  mode      tcp
+  balance   source
+{% for m in masters %}
+  server    {{ m.name | lower }} {{ m.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}:443 check inter 1s
+{% endfor %}

@@ -1,0 +1,13 @@
+---
+- name: Sync Mirror Registry
+  hosts: provisioner
+  become: false
+  vars_prompt:
+    - name: registry_pass
+      prompt: What is the registry password
+      private: true
+      unsafe: true
+  tasks:
+   
+  roles:
+    - sync_registry
