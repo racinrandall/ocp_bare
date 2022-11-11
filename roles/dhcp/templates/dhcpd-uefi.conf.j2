@@ -1,6 +1,3 @@
-default-lease-time 14400;
-max-lease-time 14400;
-
 subnet {{ dhcp.ipid }} netmask {{ dhcp.netmaskid }} {
     range dynamic-bootp {{ dhcp.poolstart }} {{ dhcp.poolend }};
     option broadcast-address        {{ dhcp.bcast }};
@@ -12,7 +9,11 @@ subnet {{ dhcp.ipid }} netmask {{ dhcp.netmaskid }} {
     {% endif %}
     option domain-name              "{{ dns.cluster_name }}.{{ dns.domain | lower }}";
     option domain-search            "{{ dns.cluster_name }}.{{ dns.domain | lower }}", "{{ dns.domain | lower }}";
-    
+}
+
+default-lease-time 14400;
+max-lease-time 14400;
+
     # Static entries
 {% if bootstrap is defined %}
 host {{ bootstrap.name | lower }} { 
