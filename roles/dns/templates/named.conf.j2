@@ -61,15 +61,15 @@ include "/etc/named.root.key";
 zone "{{ dns.domain }}" IN {
 	type master;
 	file "{{ dns.domain }}.zone";
-	allow-query { any: };
-	allow-transfer { any };
-	allow-update { any };
+	allow-query { any; };
+	allow-transfer { none; };
+	allow-update { none; };
 };
 
 zone "{{ provisioner.ipaddr1.split('.')[2] }}.{{ provisioner.ipaddr1.split('.')[1] }}.{{ provisioner.ipaddr1.split('.')[0] }}.in-addr.arpa" {
 	type master;
 	file "{{ provisioner.ipaddr1.split('.')[2] }}.{{ provisioner.ipaddr1.split('.')[1] }}.{{ provisioner.ipaddr1.split('.')[0] }}.in-addr.arpa.zone";
-	allow-query { any: };
-	allow-transfer { any };
-	allow-update { any };
+	allow-query { any; };
+	allow-transfer { none; };
+	allow-update { none; };
 };
