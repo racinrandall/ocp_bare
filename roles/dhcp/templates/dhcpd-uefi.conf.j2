@@ -18,7 +18,7 @@ subnet {{ dhcp.ipid }} netmask {{ dhcp.netmaskid }} {
 host {{ bootstrap.name | lower }} { 
     hardware ethernet {{ bootstrap.macaddr }};
     fixed-address {{ bootstrap.ipaddr }};
-    option host-name "{{ bootstrat.name | lower }}.{{ cluster_name | lower }}.{{ domain.name | lower }}";
+    option host-name "{{ bootstrat.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}";
 }
 {% endif %}
 
@@ -26,7 +26,7 @@ host {{ bootstrap.name | lower }} {
 host {{ m.name | lower }} { 
     hardware ethernet {{ m.macaddr }};
     fixed-address {{ m.ipaddr }};
-    option host-name "{{ m.name | lower }}.{{cluster_name | lower }}.{{ domain.name | lower }}";
+    option host-name "{{ m.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}";
 }
 {% endfor %}
 
@@ -35,7 +35,7 @@ host {{ m.name | lower }} {
 host {{ w.name | lower }} {
     hardware ethernet {{ w.macaddr }};
     fixed-address {{ w.ipaddr }}; 
-    option host-name "{{ w.name | lower }}.{{cluster_name | lower }}.{{ domain.name | lower }}";
+    option host-name "{{ w.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}";
 }
 {% endfor %}
 {% endif %}
