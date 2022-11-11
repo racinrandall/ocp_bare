@@ -105,7 +105,7 @@
 
 - name: Run mirror installer
   ansible.builtin.shell:
-    cmd: "./mirror-registry install --quayHostname {{ ansible_fqdn }} --quayRoot {{ registry_dir }}"
+    cmd: "./mirror-registry install --quayHostname {{ ansible_hostname }}.{{ dns.cluster_name }}.{{ dns.domain }} --quayRoot {{ registry_dir }}"
     chdir: "{{ mirror_inst_dir.path }}"
   register: installer_results
 
