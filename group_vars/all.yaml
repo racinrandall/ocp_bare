@@ -30,7 +30,6 @@ dhcp:
   poolend: "192.168.11.200"
   ipid: "192.168.11.0"
   netmaskid: "255.255.255.0"
-bootstrap:
 masters:
   - name: "control0"
     ipaddr: "192.168.11.101"
