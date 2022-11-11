@@ -9,6 +9,7 @@ network_connections:
         - "{{ provisioner.ipaddr2 }}/{{ provisioner.prefix2 }}"
       gateway4: "{{ provisioner.gateway2 }}"
       dns:
+        - 127.0.0.1
         - "{{ dns.forwarder1 }}"
         - "{{ dns.forwarder2 }}"
       dns_search: "{{ dns.domain }}"
