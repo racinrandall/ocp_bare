@@ -18,8 +18,8 @@ provisioner:
   prefix2: "24"
   gateway2: "192.168.85.1"
 dns:
-  domain: "dsl.com"
-  cluster_name: "svl-sbgold"
+  domain: "randalllabs.com"
+  cluster_name: "test"
   forwarder1: 192.168.80.2
   forwarder2: 192.168.80.4
 dhcp:
