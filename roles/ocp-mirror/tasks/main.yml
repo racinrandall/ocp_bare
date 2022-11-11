@@ -52,7 +52,7 @@
 
     - name: Check the sapce on the combined filesystem
       ansible.builtin.shell:
-        cmd: "df {{ registry_dir }} | tail -n1 | awk '{print $4'"
+        cmd: "df {{ registry_dir }} | tail -n1 | awk '{print $4}'"
       register: df_combined_dir_results
 
     - name: Determine if there is enough free space
