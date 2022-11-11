@@ -16,7 +16,7 @@ provisioner:
   interface2: eno2 #lmi           
   ipaddr2: "192.168.85.2"
   prefix2: "24"
-  gateway2: "ip addr"
+  gateway2: "192.168.85.1"
 dns:
   domain: "dsl.com"
   cluster_name: "svl-sbgold"
