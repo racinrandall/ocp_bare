@@ -17,3 +17,22 @@
   ansible.builtin.shell:
     cmd: "openshift-baremetal-install --dir /home/{{ prov_user }}/clusterconfigs create manifests"
     
+
+- name: Copy Mansifests
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/home/{{ prov_user }}/clusterconfigs/mansifests/"
+  loop:
+    - cluster-ingress-default-ingresscontroller.yaml
+    - cluster-network-avoid-workers-99-config.yaml
+
+- name: Make Masters Schedulable
+  ansible.builtin.lineinfile:
+    regex: 'mastersSchedulable: false'
+    path: "/home/{{ prov_user }}/clusterconfigs/mansifests/cluster-scheduler-02-config.yml"
+    line: 'mastersSchedulable: true'
+
+- name: Create cluster
+  ansible.builtin.shell:
+    cmd: "openshift-baremetal-install --dir /home/{{ prov_user }}/clusterconfigs --log-level debug create cluster"
+    
