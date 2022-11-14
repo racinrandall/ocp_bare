@@ -5,7 +5,7 @@ prov_packages:
   - libvirt
   - qemu-kvm
   - mkisofs
-  - pythond3-devel
+  - python3-devel
   - jq
   - ipmitool
 libvirt_default_pool: "/var/lib/libvirt/images"
