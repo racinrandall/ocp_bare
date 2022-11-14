@@ -1,0 +1,14 @@
+---
+- name: Create directory Cluster Configs
+  ansible.builtin.file:
+    path: "/home/{{ prov_user }}/clusterconfigs"
+    state: directory
+    owner: "{{ prov_user }}"
+    group: "{{ prov_user }}"
+
+- name: Copy Install Config to above directory
+  ansible.builtin.template:
+    src: install-config.yaml.j2
+    dest: "/home/{{ prov_user }}/clusterconfigs"
+    owner: "{{ prov_user }}"
+    group: "{{ prov_user }}"

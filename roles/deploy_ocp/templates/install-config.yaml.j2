@@ -40,11 +40,10 @@ platform:
     apiVIP: {{ api_ip }}
     ingressVIP: {{ apps_ip }}
     externalBridge: {{ bare_net_name }}
-    provisioningNetworkCIDR: {{ 172.22.0.0/24 }}
-    provisioningNetwork: Managed
+    provisioningNetwork: "Disabled"
     bootstrapExternalStaticIP: {{ 192.168.0.3 }}
     bootstrapExternalStaticGateway: {{ 192.168.0.2 }}
-    bootstrapOSImage: http://{{ 192.168.0.2 }}:{{ podman_http_port }}/{{ rhcos_image }}?sha256={{ rhcos_image_sha256 }} 
+    bootstrapOSImage: http://{{ provisioner.ipaddr1 }}:{{ podman_http_port }}/{{ rhcos_image }}?sha256={{ rhcos_image_sha256 }} 
     hosts:
 {% for m in masters %}
       - name: {{ m.name }}

@@ -1,5 +1,4 @@
 ---
-prov_user: kni
 password: "{{ lookup('password', 'credentials/' + prov_user + ' length=15 chars=ascii_letters,digits,punctuation') }}"
 prov_packages:
   - libvirt
