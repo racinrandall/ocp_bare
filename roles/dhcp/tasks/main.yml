@@ -1,11 +1,11 @@
 ---
 - name: Install packages for DHCP/PXE install
-  package:
+  ansible.builtin.yum:
     name: "{{ dhcppkgs }}"
     state: present
 
 - name: Write out dhcp file 
-  template:
+  ansible.builtin.template:
     src: ../templates/dhcpd-uefi.conf.j2
     dest: /etc/dhcp/dhcpd.conf
   notify:

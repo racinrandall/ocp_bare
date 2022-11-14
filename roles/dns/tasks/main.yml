@@ -22,21 +22,21 @@
   notify: restart bind
 
 - name: Installing DNS Serialnumber generator
-  copy:
+  ansible.builtin.copy:
     src: set-dns-serial.sh
     dest: /usr/local/bin/set-dns-serial.sh
     mode: '0555'
 
 - name: Set zone serial number
-  shell: "/usr/local/bin/set-dns-serial.sh"
+  ansible.builtin.shell: "/usr/local/bin/set-dns-serial.sh"
   register: dymanicserialnumber
 
 - name: Setting serial number as a fact
-  set_fact:
+  ansible.builtin.set_fact:
     serialnumber: "{{ dymanicserialnumber.stdout }}"
  
 - name: Write out "{{ dns.domain | lower }}" zone file
-  template:
+  ansible.builtin.template:
     src: fwd_zone.j2
     dest: "/var/named/{{ dns.domain | lower }}.zone"
     mode: '0644'
@@ -44,7 +44,7 @@
     - restart bind
 
 - name: Write out reverse zone file
-  template:
+  ansible.builtin.template:
     src: rev_zone.j2
     dest: "/var/named/{{ provisioner.ipaddr1.split('.')[2] }}.{{ provisioner.ipaddr1.split('.')[1] }}.{{ provisioner.ipaddr1.split('.')[0] }}.in-addr.arpa.zone"
     mode: '0644'
