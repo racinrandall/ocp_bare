@@ -18,5 +18,6 @@ The following files are required to be placed in appropriate locations after dow
 - filename: rhcos-411.86.202210041459-0-qemu.x86_64.qcow2.gz
   location: roles/pre-ocp/files
   variable: rhcos_image
-  variable: rhcos_image # This is the sha256 sum of the uncompressed rhcos_image
-  
+  variable: rhcos_image ( This is the sha256 sum of the uncompressed rhcos_image )
+- filename: ca.pem  ( This is the CA bundle to add to the install-config.yaml )
+  location: roles/deploy-ocp/files/
