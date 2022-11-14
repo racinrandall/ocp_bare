@@ -23,34 +23,38 @@ dns:
   forwarder1: 192.168.80.2
   forwarder2: 192.168.80.4
 dhcp:
-#  router: "192.168.85.1"
+  router: "192.168.11.1"
   bcast: "192.168.11.255"
   netmask: "255.255.255.0"
   poolstart: "192.168.11.100"
   poolend: "192.168.11.200"
   ipid: "192.168.11.0"
   netmaskid: "255.255.255.0"
+bootstrap:
+  - name: "bootstrap"
+    ipaddr: '10.10.10.10'
+    gateway: '10.10.10.1'
 masters:
   - name: "control0"
     ipaddr: "192.168.11.101"
     macaddr: "14:02:EC:ED:C3:E8"
     ilo_ip: "192.168.10.13"
-    ilo_user: vadmin
-    ilo_pw: 'P@55word'
+    ilo_user: 
+    ilo_pw: 
     root_device: /dev/sda
   - name: "control1"
     ipaddr: "192.168.11.102"
     macaddr: "94:57:A5:A8:C0:C8"
     ilo_ip: "192.168.10.14"
-    ilo_user: vadmin
-    ilo_pw: 'P@55word'
+    ilo_user: 
+    ilo_pw: 
     root_device: /dev/sda
   - name: "control2"
     ipaddr: "192.168.11.103"
     macaddr: "34:64:A9:B9:9D:90"
     ilo_ip: "192.168.10.15"
-    ilo_user: vadmin
-    ilo_pw: 'P@55word'
+    ilo_user: 
+    ilo_pw: 
     root_device: /dev/sda
 api_ip: "192.168.11.3"
 apps_ip: "192.168.11.4"
@@ -73,8 +77,6 @@ ipi_installer: "openshift-baremetal-install"
 podman_http_port: 8080
 rhcos_image: rhcos-411.86.202210041459-0-qemu.x86_64.qcow2.gz
 rhcos_image_sha256: 5dbc9dc6bb358a335ce353dd0c0f84bf3960ba855bc501d40edd3d44c26e19a1
-http_proxy: 
-https_proxy: "{{ http_proxy }}"
-no_proxy: 
 cert_chain: true
+disconnected: true
 prov_user: kni

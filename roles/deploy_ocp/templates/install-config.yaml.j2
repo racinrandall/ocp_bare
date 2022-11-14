@@ -1,32 +1,11 @@
 apiVersion: v1
 baseDomain: {{ dns.domain }}
-{% if http_proxy is defined %}
-#-------------------------------------------#
-# LMCO Proxy Servers                        #
-#-------------------------------------------#
-proxy:
-  httpProxy: {{ http_proxy }}
-  httpsProxy: {{ https_proxy }}
-  noProxy: {{ no_proxy }}
-{% endif %}
-{% if cert_chain %}
-#-------------------------------------------#
-# LMCO Certificate Chain                    #
-#-------------------------------------------#  
-additionalTrustBundle: |
-  {{ lookup('file','ca.pem') }}
-{% endif %}
-
-#-------------------------------------------#
-# Cluster info                              #
-#-------------------------------------------#
 metadata:
   name: {{ dns.cluster_name }}
-fips: true
-
-#-------------------------------------------#
-# Control and compute plane node config.    #
-#-------------------------------------------#
+networking:
+  machineNetwork:
+    - cidr: {{ dhcp.ipid }}/{{ provisioner.prefix1 }}
+  networkType: OVNKubernetes
 compute:
 - name: worker
   replicas: 0
@@ -39,10 +18,9 @@ platform:
   baremetal:
     apiVIP: {{ api_ip }}
     ingressVIP: {{ apps_ip }}
-    externalBridge: {{ bare_net_name }}
     provisioningNetwork: "Disabled"
-    bootstrapExternalStaticIP: {{ 192.168.0.3 }}
-    bootstrapExternalStaticGateway: {{ 192.168.0.2 }}
+    bootstrapExternalStaticIP: "{{ bootstrap.ipaddr }}"
+    bootstrapExternalStaticGateway: "{{ bootstrap.gateway }}"
     bootstrapOSImage: http://{{ provisioner.ipaddr1 }}:{{ podman_http_port }}/{{ rhcos_image }}?sha256={{ rhcos_image_sha256 }} 
     hosts:
 {% for m in masters %}
@@ -53,36 +31,19 @@ platform:
           username: {{ ilo_user }}
           password: {{ ilo_pw }}
           disableCertificateVerification: True
-        bootMACAddress: "{{b4:7a:f1:da:fe:bc}}"
+        bootMACAddress: "{{ m.macaddr }}"
         rootDeviceHints:
-         deviceName: "{{ root_device }}"
-{% endfor
+          deviceName: "{{ root_device }}"
+{% endfor %}
+pullSecret: {{ pull_secret }} 
+sshKey: {{ ssk_key }}
+{% if disconnected %}
+imageContentSources:
+{{ lookup('ansible.builtin.fileglob','{{ local_mirror_path }}/*.yaml') }}
+{% endif %}
 
-#-------------------------------------------#
-# Network Configurations.                   #
-# Either OpenShiftSDN or OVNKubernetes.     #
-# The default value is OpenShiftSDN.        #
-# Note that OVNKubernetes did not work      #
-#-------------------------------------------#
-networking:
-  clusterNetwork:
-  - cidr: 10.128.0.0/14
-    hostPrefix: 23
-  machineNetwork:
-  - cidr: 192.168.0.0/24
-  networkType: OpenShiftSDN
-  serviceNetwork:
-  - 172.30.0.0/16
-
-
-#-------------------------------------------#
-# Mirror registry                           #
-#-------------------------------------------#
-#imageContentSources:
-#- mirrors:
-
-#-------------------------------------------#
-# Keys and access                           #
-#-------------------------------------------#
-pullSecret: 
-sshKey: 
+fips: true
+{% if cert_chain %}
+additionalTrustBundle: |
+  {{ lookup('ansible.builtin.file','ca.pem') }}
+{% endif %}
