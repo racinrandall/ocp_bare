@@ -59,8 +59,6 @@ masters:
 api_ip: "192.168.11.3"
 apps_ip: "192.168.11.4"
 networkifacename: baremetal
-ocp_version: "stable-4.11"
-ocp_release_arch: "x86_64"
 oc_cli_tar: oc-4.11.13-linux.tar.gz
 oc_mirror_tar: oc-mirror.tar.gz
 haproxy_control: false
