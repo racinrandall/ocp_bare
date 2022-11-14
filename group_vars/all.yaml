@@ -71,8 +71,8 @@ registry_port: 5050
 local_mirror_path: '/tmp/mirror/'
 ipi_installer: "openshift-baremetal-install"
 podman_http_port: 8080
-rhcos_image: rhcos-411.86.202207150124-0-qemu.x86_64.qcow2.gz
-rhcos_image_sha256: 5ff0b437ce2a3749feedbf6eb20fdb168dfb110fbdde82aaab092d9bb158aba3
+rhcos_image: rhcos-411.86.202210041459-0-qemu.x86_64.qcow2.gz
+rhcos_image_sha256: 5dbc9dc6bb358a335ce353dd0c0f84bf3960ba855bc501d40edd3d44c26e19a1
 http_proxy: 
 https_proxy: "{{ http_proxy }}"
 no_proxy: 
