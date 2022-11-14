@@ -1,0 +1,8 @@
+---
+- name: OCP Deployment
+  hosts: provisioner
+  become: true
+  tasks:
+   
+  roles:
+    - deploy_ocp

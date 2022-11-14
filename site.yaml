@@ -32,3 +32,6 @@
 
     - ansible.builtin.include_role:
         name: pre-ocp
+
+    - ansible.builtin.include_role:
+        name: deploy_ocp
