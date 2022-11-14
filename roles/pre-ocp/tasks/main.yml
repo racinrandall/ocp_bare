@@ -6,14 +6,13 @@
 
 - name: Create user for install
   ansible.builtin.user:
-    name: "{{ item }}"
+    name: "{{ prov_user }}"
     state: present
     password: "{{ password | password_hash('sha512') }}"
     groups: libvirt
     append: true
     generate_ssh_key: true
     update_password: on_create
-  loop: "{{ prov_user }}"
 
 - name: Setup sudoers for above user
   ansible.builtin.copy:
