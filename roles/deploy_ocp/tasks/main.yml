@@ -12,3 +12,8 @@
     dest: "/home/{{ prov_user }}/clusterconfigs"
     owner: "{{ prov_user }}"
     group: "{{ prov_user }}"
+
+- name: Create Manifests
+  ansible.builtin.shell:
+    cmd: "openshift-baremetal-install --dir /home/{{ prov_user }}/clusterconfigs create manifests"
+    
