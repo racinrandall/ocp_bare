@@ -78,3 +78,4 @@ rhcos_image_sha256: 5dbc9dc6bb358a335ce353dd0c0f84bf3960ba855bc501d40edd3d44c26e
 cert_chain: true
 disconnected: true
 prov_user: kni
+ssh_key: ''
