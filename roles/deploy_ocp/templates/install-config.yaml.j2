@@ -35,7 +35,7 @@ platform:
         rootDeviceHints:
           deviceName: "{{ root_device }}"
 {% endfor %}
-pullSecret: {{ pull_secret }} 
+pullSecret: {{ lookup('ansible.builtin.file','pull-secret.txt') }}
 sshKey: {{ ssk_key }}
 {% if disconnected %}
 imageContentSources:

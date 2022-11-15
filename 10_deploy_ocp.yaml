@@ -2,6 +2,7 @@
 - name: OCP Deployment
   hosts: provisioner
   become: true
+  become_user: "{{ prov_user }}"
   tasks:
    
   roles:
