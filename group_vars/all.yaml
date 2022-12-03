@@ -1,7 +1,7 @@
 ---
-registry_user: 
+registry_user: 'ocpuser'
 registry_pass: 
-registry_email:
+registry_email: ''
 mirror_required: false
 dns_required: true
 dhcp_required: true
@@ -9,72 +9,79 @@ haproxy_required: true
 time_required: true
 bare_net_name: baremetal
 provisioner:                 
-  name: bastion              
-  interface1: eno1 #private          
-  ipaddr1: "192.168.11.2" 
+  name: bastion
+  interface1: ens1f0np0 #private          
+  ipaddr1: "10.10.10.1" 
   prefix1: "24"
-  interface2: eno2 #lmi           
-  ipaddr2: "192.168.85.2"
-  prefix2: "24"
-  gateway2: "192.168.85.1"
+  interface2: eno5np0 #lmi           
+  ipaddr2: "134.133.97.157"
+  prefix2: "22"
+  gateway2: "134.133.99.254"
 dns:
-  domain: "randalllabs.com"
-  cluster_name: "test"
-  forwarder1: 192.168.80.2
-  forwarder2: 192.168.80.4
+  domain: "example.com"
+  cluster_name: "ocp"
+  forwarder1: 
+  forwarder2: 
 dhcp:
-  router: "192.168.11.1"
-  bcast: "192.168.11.255"
+  router: "10.10.10.1"
+  bcast: "10.10.10.255"
   netmask: "255.255.255.0"
-  poolstart: "192.168.11.100"
-  poolend: "192.168.11.200"
-  ipid: "192.168.11.0"
+  poolstart: "10.10.10.30"
+  poolend: "10.10.10.200"
+  ipid: "10.10.10.0"
   netmaskid: "255.255.255.0"
 bootstrap:
-  - name: "bootstrap"
+    name: "bootstrap"
     ipaddr: '10.10.10.10'
     gateway: '10.10.10.1'
 masters:
-  - name: "control0"
-    ipaddr: "192.168.11.101"
-    macaddr: "14:02:EC:ED:C3:E8"
-    ilo_ip: "192.168.10.13"
-    ilo_user: 
-    ilo_pw: 
+  - name: "master-1"
+    ipaddr: "10.10.10.11"
+    macaddr: ""
+    ilo_ip: "10.10.10.40"
+    ilo_user: Administrator
+    ilo_pw: ' '
     root_device: /dev/sda
-  - name: "control1"
-    ipaddr: "192.168.11.102"
-    macaddr: "94:57:A5:A8:C0:C8"
-    ilo_ip: "192.168.10.14"
-    ilo_user: 
-    ilo_pw: 
+  - name: "master-2"
+    ipaddr: "10.10.10.12"
+    macaddr: ""
+    ilo_ip: "10.10.10.41"
+    ilo_user: Administrator
+    ilo_pw: ' '
     root_device: /dev/sda
-  - name: "control2"
-    ipaddr: "192.168.11.103"
-    macaddr: "34:64:A9:B9:9D:90"
-    ilo_ip: "192.168.10.15"
-    ilo_user: 
-    ilo_pw: 
+  - name: "master-3"
+    ipaddr: "10.10.10.13"
+    macaddr: ""
+    ilo_ip: "10.10.10.42"
+    ilo_user: Administrator
+    ilo_pw: ' '
     root_device: /dev/sda
-api_ip: "192.168.11.3"
-apps_ip: "192.168.11.4"
+api_ip: "10.10.10.6"
+apps_ip: "10.10.10.7"
 networkifacename: baremetal
 oc_cli_tar: oc-4.11.13-linux.tar.gz
 oc_mirror_tar: oc-mirror.tar.gz
 haproxy_control: false
 time_server:
-  - name: 192.168.85.1
-  - name: 192.168.80.1
-registry_server: "registry.{{ dns.cluster | lower }}.{{ dns.domain | lower }}"
+  - name: 
+  - name: 
+registry_server: "{{ ansible_hostname }}.{{ dns.domain | lower }}"
 mirror_metadata_storage: /var/opt/mirror
-mirror_tarball: mirror_content.tar
-mirror_tarball_dest: /tmp
+binary_tarball: ocptarfiles.tar
+mirror_tarballs:
+  - mirror_seq1_000000.tar
+  - mirror_seq2_000000.tar
+  - mirror_seq3_000000.tar
+  - mirror_seq4_000000.tar
+mirror_tarball_dest: "{{ mirror_metadata_storage }}"
 registry_port: 5050
 local_mirror_path: '/tmp/mirror/'
 ipi_installer: "openshift-baremetal-install"
-podman_http_port: 8080
-rhcos_image: rhcos-411.86.202210041459-0-qemu.x86_64.qcow2.gz
-rhcos_image_sha256: 5dbc9dc6bb358a335ce353dd0c0f84bf3960ba855bc501d40edd3d44c26e19a1
+podman_http_port: 8081
+rhcos_image: rhcos-411.86.202208112011-0-qemu.x86_64.qcow2.gz
+rhcos_image_sha256: fc24ad2060fc2ac0e15ce44b69436925aaecca4f4de2249524089d6823d9d17e
 cert_chain: true
 disconnected: true
 prov_user: kni
+registry_path: '/gitlab-instance-0f1132f8/ocp-kop-registry'
+ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDCuxxqNpsyPJ0Q9Ua0aMHtI5kH8GmTNC/xlX37GKl49+gUztQELgy7+mfxWtFlpOrZv0pPCPwpX4BaZNT7/3MYQjTPTIXX+PiggmHSSdQLBI7X8az6nZ0ym31L2JQ5HNBQwZVKNfo9qsx5Mq+cdQ+QWMBzFkiWvLglesUkJFcN4LwOUDq9seMxLKscxvRmn3steS1D0eNEWxZiLidb9xtqxGFiWR3zFhkDjkbEXUchKy6B85MWXBjum0RX/c97+v05M/Rw51V1keKofwHGrQEKBTjx9D8YhrzJ/TjFSm3YbtQIPc7yq6K9NE8W9+pkZ9zaRnZWgNY+sWG+pN5ldcyEeLl0lw7Wjeo3eH+Ch6IO4UjKV5Da3YEMF2HvB8gWouMVM760qpYfMOC1DSUDTd8AyaapRanx7DvHmzGKSacZIuCnKE6PPvid9weBkzsIucwGtpgIZvLsNyRVGGEerjiJMaidvIg2MxrYMiOAXomAKAV9+sbqYmWfai4HSIcQ9DE= kbonnelycke@svl-ocpb01.dsl.com'

@@ -9,19 +9,19 @@
 - name: Copy Install Config to above directory
   ansible.builtin.template:
     src: install-config.yaml.j2
-    dest: "/home/{{ prov_user }}/clusterconfigs"
+    dest: "/home/{{ prov_user }}/clusterconfigs/install-config.yaml"
     owner: "{{ prov_user }}"
     group: "{{ prov_user }}"
 
 - name: Create Manifests
   ansible.builtin.shell:
-    cmd: "openshift-baremetal-install --dir /home/{{ prov_user }}/clusterconfigs create manifests"
+    cmd: "/usr/local/bin/openshift-baremetal-install --dir /home/{{ prov_user }}/clusterconfigs create manifests"
     
 
 - name: Copy Mansifests
   ansible.builtin.copy:
     src: "{{ item }}"
-    dest: "/home/{{ prov_user }}/clusterconfigs/mansifests/"
+    dest: "/home/{{ prov_user }}/clusterconfigs/manifests/"
   loop:
     - cluster-ingress-default-ingresscontroller.yaml
     - cluster-network-avoid-workers-99-config.yaml
@@ -29,10 +29,10 @@
 - name: Make Masters Schedulable
   ansible.builtin.lineinfile:
     regex: 'mastersSchedulable: false'
-    path: "/home/{{ prov_user }}/clusterconfigs/mansifests/cluster-scheduler-02-config.yml"
+    path: "/home/{{ prov_user }}/clusterconfigs/manifests/cluster-scheduler-02-config.yml"
     line: 'mastersSchedulable: true'
 
 - name: Create cluster
   ansible.builtin.shell:
-    cmd: "openshift-baremetal-install --dir /home/{{ prov_user }}/clusterconfigs --log-level debug create cluster"
+    cmd: "/usr/local/bin/openshift-baremetal-install --dir /home/{{ prov_user }}/clusterconfigs --log-level debug create cluster"
     

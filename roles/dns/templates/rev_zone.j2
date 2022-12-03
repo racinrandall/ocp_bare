@@ -14,7 +14,7 @@ $TTL 1W
 
 {% if bootstrap is defined %}
 ; Bootstrap
-{{ bootstrap.ipaddr.split('.')[3] }} 	IN		PTR		{{ boostrap.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}.
+{{ bootstrap.ipaddr.split('.')[3] }} 	IN		PTR		{{ bootstrap.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}.
 {% endif %}
 
 {% for m in masters %}

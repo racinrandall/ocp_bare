@@ -85,10 +85,10 @@
     name: "{{ image_pool_name }}"
     uri: "{{ libvirt_uri }}"
 
-- name: Copy openshift-ipi-baremetal installer
-  ansible.builtin.copy:
-    src: "{{ ipi_installer }}"
-    dest: /usr/local/bin/
+#- name: Copy openshift-ipi-baremetal installer
+#  ansible.builtin.copy:
+#    src: "{{ ipi_installer }}"
+#    dest: /usr/local/bin/
 
 - name: Install Podman
   ansible.builtin.yum:
@@ -104,7 +104,7 @@
 
 - name: Create directory for RHCOS image
   ansible.builtin.file: 
-    path: "/home/{{ prov_user }}/rhcos_image_cache"
+    path: "/var/opt/rhcos_image_cache"
     state: directory
     setype: httpd_sys_content_t
     owner: "{{ prov_user }}"
@@ -113,7 +113,7 @@
 - name: Copy image to directory
   ansible.builtin.copy: 
     src: "{{ rhcos_image }}"
-    dest: "/home/{{ prov_user }}/rhcos_image_cache"
+    dest: "/var/opt/rhcos_image_cache"
     setype: httpd_sys_content_t
     owner: "{{ prov_user }}"
     group: "{{ prov_user }}"
@@ -121,8 +121,8 @@
 - name: Create Podman container for http  
   containers.podman.podman_container:
     name: rhcos_image_cache
-    volume: "/home/{{ prov_user }}/rhcos_image_cache:/var/www/html"
-    publish: 8080:8080
-    image: quay.io/centos7/httpd-24-centos7:latest
-
+    volume: "/var/opt/rhcos_image_cache:/var/www/html"
+    publish: "{{ podman_http_port }}:8080"
+    image: "{{ ansible_hostname }}.{{ dns.domain }}:{{ registry_port }}{{ registry_path }}/centos7/httpd-24-centos7:latest"
+  become: false
     

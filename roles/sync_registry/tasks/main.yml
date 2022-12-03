@@ -1,15 +1,7 @@
 ---
-- name: Extract the OC CLI utility
+- name: Extract the required binaries
   ansible.builtin.unarchive:
-    src: "{{ oc_cli_tar }}"
-    dest: /usr/local/bin/
-    include:
-      - oc
-  become: true
-
-- name: Extract the OC Mirror utility
-  ansible.builtin.unarchive:
-    src: "{{ oc_mirror_tar }}"
+    src: "{{ binary_tarball }}"
     dest: /usr/local/bin/
   become: true
 
@@ -48,38 +40,39 @@
     src: config.json.j2
     dest: ~/.docker/config.json
 
-- name: Copy tarball onto host
-  ansible.builtin.copy:
-    src: "{{ mirror_tarball }}"
-    dest: "{{ mirror_tarball_dest }}"
-
+    #- name: Copy tarball onto host
+    #  ansible.builtin.copy:
+    #    src: "{{ mirror_tarball }}"
+    #    dest: "{{ mirror_tarball_dest }}"
+    #
 - name: run the mirror sync command
   ansible.builtin.shell:
-    cmd: "oc mirror --from={{ mirror_tarball_dest }}/{{ mirror_tarball }}  docker://{{ registry_server }}:{{ registry_port }} "
-    chdir: "/home/{{ ansible_user_id }}"
+    cmd: "oc mirror --from={{ mirror_tarball_dest }}/{{ item }}  docker://{{ registry_server }}:{{ registry_port }}{{ registry_path }} "
+    chdir: "{{ mirror_tarball_dest }}"
+  loop: "{{ mirror_tarballs }}"
 
-- name: find directory that contains mirror yaml files
-  ansible.builtin.find:
-    paths: "/home/{{ ansible_user_id }}/oc-mirror-workspace/"
-    file_type: directory
-    patterns: results*
-  register: mirror_dir
-  
-- name: find YAML files in above directory
-  ansible.builtin.find:
-    paths: "{{ mirror_dir.files.0.path }}"
-    patterns: '*.yml,*.yaml'
-  register: yaml_files
+#- name: find directory that contains mirror yaml files
+#  ansible.builtin.find:
+#    paths: "{{ mirror_tarball_dest }}/oc-mirror-workspace/"
+#    file_type: directory
+#    patterns: results*
+#  register: mirror_dir
+#  
+#- name: find YAML files in above directory
+#  ansible.builtin.find:
+#    paths: "{{ mirror_dir.files.0.path }}"
+#    patterns: '*.yml,*.yaml'
+#  register: yaml_files
 
-- name: Make directory to store mirror config files
-  ansible.builtin.file:
-    path: "{{ local_mirror_path }}"
-    state: directory
-  delegate_to: localhost
-
-- name: fetch yaml files
-  ansible.builtin.fetch:
-    src: "{{ item.path }}"
-    dest: "{{ local_mirror_path }}"
-    flat: true
-  loop: "{{ yaml_files.files }}"
+#- name: Make directory to store mirror config files
+#  ansible.builtin.file:
+#    path: "{{ local_mirror_path }}"
+#    state: directory
+#  delegate_to: localhost
+#
+#- name: fetch yaml files
+#  ansible.builtin.fetch:
+#    src: "{{ item.path }}"
+#    dest: "{{ local_mirror_path }}"
+#    flat: true
+#  loop: "{{ yaml_files.files }}"

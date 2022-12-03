@@ -2,3 +2,4 @@ pull-secret.txt
 *.gz
 *.pem
 openshift-baremetal-install
+*.tar

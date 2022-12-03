@@ -15,7 +15,7 @@ smtp.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}. 		IN		A	{{ provisi
 ntp.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}. 		IN		A	{{ provisioner.ipaddr1 }}
 registry.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}. 	IN		A	{{ provisioner.ipaddr1 }}
 bastion.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}. 	IN		A	{{ provisioner.ipaddr1 }}
-{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}. 			IN		A	{{ provisioner.ipaddr1 }}
+{{ ansible_hostname}}.{{ dns.domain | lower }}. 			IN		A	{{ provisioner.ipaddr1 }}
 ;
 ;
 {{ provisioner.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}.	IN	A	{{ provisioner.ipaddr1 }}

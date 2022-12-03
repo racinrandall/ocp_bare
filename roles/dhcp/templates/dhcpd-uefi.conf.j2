@@ -7,6 +7,7 @@ subnet {{ dhcp.ipid }} netmask {{ dhcp.netmaskid }} {
     {% else %}
     option domain-name-servers      {{ provisioner.ipaddr1 }};
     {% endif %}
+    option routers		    {{ dhcp.router }};
     option domain-name              "{{ dns.cluster_name }}.{{ dns.domain | lower }}";
     option domain-search            "{{ dns.cluster_name }}.{{ dns.domain | lower }}", "{{ dns.domain | lower }}";
 }
@@ -15,13 +16,6 @@ default-lease-time 14400;
 max-lease-time 14400;
 
     # Static entries
-{% if bootstrap is defined %}
-host {{ bootstrap.name | lower }} { 
-    hardware ethernet {{ bootstrap.macaddr }};
-    fixed-address {{ bootstrap.ipaddr }};
-    option host-name "{{ bootstrat.name | lower }}.{{ dns.cluster_name | lower }}.{{ dns.domain | lower }}";
-}
-{% endif %}
 
 {% for m in masters %}
 host {{ m.name | lower }} { 
