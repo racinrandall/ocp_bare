@@ -35,8 +35,8 @@ platform:
         rootDeviceHints:
           deviceName: "{{ m.root_device }}"
 {% endfor %}
-pullSecret: '{{ lookup('ansible.builtin.file','pull-secret.txt') }}' 
-sshKey: '{{ ssh_key }}'
+pullSecret: {{ pull_secret }} 
+sshKey: {{ ssk_key }}
 imageContentSources:
   - mirrors:
     - {{ ansible_hostname }}.{{ dns.domain }}:{{ registry_port}}{{ registry_path }}/openshift/release

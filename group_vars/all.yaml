@@ -32,8 +32,13 @@ dhcp:
   netmaskid: "255.255.255.0"
 bootstrap:
     name: "bootstrap"
+<<<<<<< HEAD
     ipaddr: '10.10.10.10'
     gateway: '10.10.10.1'
+=======
+    ipaddr: '192.168.11.10'
+    gateway: '192.168.11.2'
+>>>>>>> 06f7ca5a1555a0286a0b2ac890bf90c0de786759
 masters:
   - name: "master-1"
     ipaddr: "10.10.10.11"
@@ -83,5 +88,9 @@ rhcos_image_sha256: fc24ad2060fc2ac0e15ce44b69436925aaecca4f4de2249524089d6823d9
 cert_chain: true
 disconnected: true
 prov_user: kni
+<<<<<<< HEAD
 registry_path: '/gitlab-instance-0f1132f8/ocp-kop-registry'
 ssh_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDCuxxqNpsyPJ0Q9Ua0aMHtI5kH8GmTNC/xlX37GKl49+gUztQELgy7+mfxWtFlpOrZv0pPCPwpX4BaZNT7/3MYQjTPTIXX+PiggmHSSdQLBI7X8az6nZ0ym31L2JQ5HNBQwZVKNfo9qsx5Mq+cdQ+QWMBzFkiWvLglesUkJFcN4LwOUDq9seMxLKscxvRmn3steS1D0eNEWxZiLidb9xtqxGFiWR3zFhkDjkbEXUchKy6B85MWXBjum0RX/c97+v05M/Rw51V1keKofwHGrQEKBTjx9D8YhrzJ/TjFSm3YbtQIPc7yq6K9NE8W9+pkZ9zaRnZWgNY+sWG+pN5ldcyEeLl0lw7Wjeo3eH+Ch6IO4UjKV5Da3YEMF2HvB8gWouMVM760qpYfMOC1DSUDTd8AyaapRanx7DvHmzGKSacZIuCnKE6PPvid9weBkzsIucwGtpgIZvLsNyRVGGEerjiJMaidvIg2MxrYMiOAXomAKAV9+sbqYmWfai4HSIcQ9DE= kbonnelycke@svl-ocpb01.dsl.com'
+=======
+ssh_key: ''
+>>>>>>> 06f7ca5a1555a0286a0b2ac890bf90c0de786759
